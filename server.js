@@ -9,6 +9,7 @@ const Book = require('./models/book');
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
 
@@ -31,7 +32,7 @@ db.once('open', function () {
   console.log('Mongoose is connected');
 });
 
-// endpoint, currently not working
+// endpoint for get
 app.get('/books', getBooks);
 async function getBooks(request, response, next){
   try {
@@ -43,6 +44,31 @@ async function getBooks(request, response, next){
   }
 
 };
+
+// endpoint to post
+app.post('/books', addBook);
+async function addBook(request, response, next){
+  try {
+    let createdBook = await Book.create(request.body)
+    response.status(200).send(createdBook)
+  } catch (error) {
+
+   next (error);
+}
+}
+
+// endpoint to delete
+app.delete('/books/:id', deleteBook);
+async function deleteBook(request, response, next){
+  try {
+    let { id } = request.params;
+    await Book.findByIdAndDelete(id);
+    response.status(200).send('book deleted');
+  } catch (error) {
+    next (error);
+  }
+}
+
 
 app.get ('*', (request, response) => {
   response.status(404).send('Not available');
