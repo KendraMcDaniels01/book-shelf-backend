@@ -69,6 +69,19 @@ async function deleteBook(request, response, next){
   }
 }
 
+// endpoint to update
+app.put('/books/:bookID', updatedBook);
+async function updatedBook(request, response, next){
+  try {
+    let id = request.params.bookID
+    let data = request.body;
+    let optionsObj = {new: true, overwrite: true };
+    let updatedBook = await Book.findByIdAndUpdate(id, data, optionsObj); // (id,data,option boject {new: true, overwrite: true})
+  } catch (error) {
+    next (error);
+  }
+}
+
 
 app.get ('*', (request, response) => {
   response.status(404).send('Not available');
